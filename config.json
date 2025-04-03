@@ -1,0 +1,14 @@
+{
+    "mcpServers": {
+      "BlockchainMCP": {
+        "command": "uv",
+        "args": [
+          "--directory",
+          "/path/python/blockchain-mcp",
+          "run",
+          "blockchain-mcp"
+        ]
+      }
+    }
+  }
+  
