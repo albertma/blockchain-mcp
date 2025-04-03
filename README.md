@@ -17,7 +17,7 @@ uv sync
    VECHAIN_NODE_URL=<your-vechain-url>
    ```
 
-#### Running the Server
+#### Running the Server Config
 
 ```
 {
@@ -26,7 +26,7 @@ uv sync
             "command": "uv",
             "args": ["--from", "/your/blockchain/mcp/path/", "blockchain-mcp"],
             "env": {
-          
+      
             }
         }
     }
@@ -42,3 +42,13 @@ uv
 run
 blockchain-mcp
 ```
+
+![1743655193977](image/README/1743655193977.png)
+
+#### Integrated with Claude Desktop App
+
+1. Add Configure file
+2. Try it on Desktop
+
+![1743654998520](image/README/1743654998520.png)
+
