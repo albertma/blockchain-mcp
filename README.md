@@ -1,4 +1,3 @@
-
 # AI MCP Server of Blockchain
 
 #### Setup
@@ -45,9 +44,9 @@ blockchain-mcp
 
 ![1743655193977](image/README/1743655193977.png)
 
-#### Integrated with Claude Desktop App
+#### Integrated with AI Claude Desktop App
 
 1. Add Configure file
-2. Try it on Desktop
+2. Try it on Claude desktop App
 
 ![1743654998520](image/README/1743654998520.png)
