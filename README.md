@@ -26,7 +26,7 @@ uv sync
             "command": "uv",
             "args": ["--from", "/your/blockchain/mcp/path/", "blockchain-mcp"],
             "env": {
-      
+  
             }
         }
     }
@@ -51,4 +51,3 @@ blockchain-mcp
 2. Try it on Desktop
 
 ![1743654998520](image/README/1743654998520.png)
-
