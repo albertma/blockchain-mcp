@@ -42,4 +42,3 @@ uv
 run
 blockchain-mcp
 ```
-
