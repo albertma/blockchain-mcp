@@ -1,19 +1,32 @@
 # AI MCP Server of Blockchain
 
+#### Functions
+
+* get balance of address
+* get transaction content by transaction Id or transaction hash
+* get block content by block number, block hash
+  More feature will come....
+
+#### Blockchain
+
+- Ethereum, VeChain.
+
+- *Bitcoin, Solana, Polygon will come soon.*
+
 #### Setup
 
 1. Install dependencies using uv
 
-```
-uv venv
-uv sync
+```bash
+$uv venv
+$uv sync
 ```
 
 2. Create a .env file with your blockchain API key:
 
    ```
-   ETHEREUM_NODE_URL=<your-ethereum-url>
-   VECHAIN_NODE_URL=<your-vechain-url>
+   export ETHEREUM_NODE_URL=<your-ethereum-url>
+   export VECHAIN_NODE_URL=<your-vechain-url>
    ```
 
 #### Running the Server Config
@@ -35,7 +48,7 @@ uv sync
 
 #### Debug MCP Server
 
-```
+```bash
 $source .env
 $npx @modelcontextprotocol/inspector uv --directory /path/to/blockchain-mcp run blockchain-mcp
 ```
@@ -48,3 +61,5 @@ $npx @modelcontextprotocol/inspector uv --directory /path/to/blockchain-mcp run 
 2. Try it on Claude desktop App
 
 ![1743654998520](image/README/1743654998520.png)
+
+![1743851610820](image/README/1743851610820.jpg)
