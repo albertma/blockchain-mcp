@@ -25,7 +25,8 @@ uv sync
             "command": "uv",
             "args": ["--from", "/your/blockchain/mcp/path/", "blockchain-mcp"],
             "env": {
-  
+  		"ETHEREUM_NODE_URL":"https://mainnet.infura.io/v3/<your_key>",
+		"VECHAIN_NODE_URL":"https://<vechain-node-url>"
             }
         }
     }
@@ -35,11 +36,8 @@ uv sync
 #### Debug MCP Server
 
 ```
-npx @modelcontextprotocol/inspector
-uv
---directory /path/to/blockchain-mcp
-run
-blockchain-mcp
+$source .env
+$npx @modelcontextprotocol/inspector uv --directory /path/to/blockchain-mcp run blockchain-mcp
 ```
 
 ![1743655193977](image/README/1743655193977.png)
