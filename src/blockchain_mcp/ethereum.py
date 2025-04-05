@@ -76,32 +76,33 @@ class Ethereum(BaseBlockchain):
     def get_transaction(self, tx_hash: str) -> BlockchainResponse:
         try:
             self._validate_tx_hash(tx_hash=tx_hash)
-            tx_dict = self.w3.eth.get_transaction(transaction_hash=tx_hash).__dict__
+            tx_info = self.w3.eth.get_transaction(transaction_hash=tx_hash).__dict__
+            print(f"Transaction: {tx_info}")
             data = f"""
-                blockHash: {tx_dict["blockHash"].hex()},
-                blockNumber: {tx_dict["blockNumber"]},
-                from: {tx_dict["from"]},
-                gas: {tx_dict["gas"]},
-                gasPrice: {tx_dict["gasPrice"]},
-                hash: {tx_dict["hash"].hex()},
-                input: {tx_dict["input"]},
-                nonce: {tx_dict["nonce"]},
-                to: {tx_dict["to"]},
-                transactionIndex: {tx_dict["transactionIndex"]},
-                value: {tx_dict["value"]},
-                v: {tx_dict["v"]},
-                r: {tx_dict["r"].hex()},
-                s: {tx_dict["s"].hex()}
+                from: {tx_info["from"]},
+                to: {tx_info["to"]},
+                value: {tx_info["value"]},
+                gas: {tx_info["gas"]},
+                gasPrice: {tx_info["gasPrice"]},
+                nonce: {tx_info["nonce"]},
+                blockHash: {tx_info["blockHash"].hex()},
+                blockNumber: {tx_info["blockNumber"]},
+                transactionIndex: {tx_info["transactionIndex"]},
+                input: {tx_info["input"]},
+                v: {tx_info["v"]},
+                r: {tx_info["r"].hex()},
+                s: {tx_info["s"].hex()},
+                chainId: {tx_info["chainId"]}
                 """
-            return BlockchainResponse(success=True, data=data)
+            return BlockchainResponse(success=True, data=data, error=None)
         except ValueError as e:
-            print(f"Get transaction {str(e)}")
+            print(f"Value Error Get transaction {str(e)}")
             return BlockchainResponse(success=False, data=None, error=str(e))
         except TransactionNotFound as e:
-            print(f"Get transaction {str(e)}")
+            print(f"TransactionNotFound Get transaction {str(e)}")
             return BlockchainResponse(success=False, data="Block not found", error=str(e))
         except Web3Exception as e:
-            print(f"Get transaction {str(e)}")
+            print(f"Web3Exception Get transaction {str(e)}")
             return BlockchainResponse(success=False, data=None, error=e)
         
     def _validate_block_identifier(self, block_identifier: Union[int, str]):
@@ -116,14 +117,16 @@ class Ethereum(BaseBlockchain):
         else:
             raise ValueError("Block identifier must be an integer or a string")
         
-    def _validate_tx_hash(self, tx_hash: str) -> bool:
+    def _validate_tx_hash(self, tx_hash: str):
         """Validate transaction hash format"""
         if not isinstance(tx_hash, str):
+            print("Tx hash must be a string")
             raise ValueError("Tx hash must be string")
         if not re.match(r'^(0x)?[0-9a-fA-F]{64}$', tx_hash):
+            print("Invalid Ethereum tx_hash format")
             raise ValueError("Invalid Ethereum tx_hash format")
     
-    def _validate_address(self, address:str)->str:
+    def _validate_address(self, address:str):
         """Convert address to checksum format"""
         if not isinstance(address, str):
             raise ValueError("Address must be a string")
@@ -136,6 +139,6 @@ if __name__ == "__main__":
     if not ETHEREUM_NODE_URL:
         raise ValueError("ETHEREUM_NODE_URL environment variable is not set")
     eth = Ethereum(ETHEREUM_NODE_URL)
-    print(eth.get_block_info("latest"))
+    #print(eth.get_block_info("latest"))
     #print(eth.get_balance("0xd3CdA913deB6f67967B99D67aCDFa1712C293601"))
-    #print(eth.get_transaction("0x5f3b8c2e4d1a7c6f8e9b2f3a4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e"))
+    print(eth.get_transaction("0x1c31133a632433cd4896c6303a562926eb84378356dee33484ebf6b72391daed"))

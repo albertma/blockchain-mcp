@@ -35,8 +35,8 @@ class Vechain(BaseBlockchain):
             response.raise_for_status()
             
             block_info = response.json()
-            if 'error' in block_info:
-                raise ValueError(f"Error fetching block info: {block_info['error']}")
+            if block_info is None:
+                return BlockchainResponse(success=True, data="Block not found", error=None)
             
             data = f"""
                 id: {block_info["id"]},
@@ -59,7 +59,7 @@ class Vechain(BaseBlockchain):
         except requests.HTTPError as e:
             print(f"Get block info error: {str(e)}")
             if e.response.status_code == 400:
-                return BlockchainResponse(success=True, data="Block not found", error=str(e))
+                return BlockchainResponse(success=True, data="Block Id is not valid", error=str(e))
             else:
                 return BlockchainResponse(success=False, data=None, error=str(e))
         except requests.RequestException as e:
@@ -78,22 +78,26 @@ class Vechain(BaseBlockchain):
             response = self.session.get(url, headers=self.headers)
             response.raise_for_status()
             transaction_info = response.json()
-            data = f"""
-                id: {transaction_info["id"]},
-                chainTag: {transaction_info["chainTag"]},
-                blockRef: {transaction_info["blockRef"]},
-                expiration: {transaction_info["expiration"]},
-                gasPriceCoef: {transaction_info["gasPriceCoef"]},
-                gas: {transaction_info["gas"]},
-                nonce: {transaction_info["nonce"]},
-                origin: {transaction_info["origin"]},
-                delegator: {transaction_info["delegator"]},
-                dependsOn: {transaction_info["dependsOn"]},
-                size: {transaction_info["size"]},
-                clauses: {transaction_info["clauses"]},
-                meta: {transaction_info["meta"]}
-            """    
-            return BlockchainResponse(success=True, data=data, error=None)
+            if transaction_info is None:
+                data = "Transaction not found"
+                return BlockchainResponse(success=True, data=data, error=None)
+            else:
+                data = f"""
+                    id: {transaction_info["id"]},
+                    chainTag: {transaction_info["chainTag"]},
+                    blockRef: {transaction_info["blockRef"]},
+                    expiration: {transaction_info["expiration"]},
+                    gasPriceCoef: {transaction_info["gasPriceCoef"]},
+                    gas: {transaction_info["gas"]},
+                    nonce: {transaction_info["nonce"]},
+                    origin: {transaction_info["origin"]},
+                    delegator: {transaction_info["delegator"]},
+                    dependsOn: {transaction_info["dependsOn"]},
+                    size: {transaction_info["size"]},
+                    clauses: {transaction_info["clauses"]},
+                    meta: {transaction_info["meta"]}
+                """    
+                return BlockchainResponse(success=True, data=data, error=None)
         except requests.HTTPError as e:
             print(f"Get transaction error: {str(e)}")
             if e.response.status_code == 400:
@@ -133,7 +137,7 @@ class Vechain(BaseBlockchain):
         except requests.HTTPError as e:
             print(f"Get balance error: {str(e)}")
             if e.response.status_code == 400:
-                return BlockchainResponse(success=True, data="Address not found", error=str(e))
+                return BlockchainResponse(success=True, data="Invalid address", error=str(e))
             else:
                 return BlockchainResponse(success=False, data=f"Get balance error: {str(e)}", error=str(e))
         except requests.RequestException as e:
@@ -176,6 +180,6 @@ class Vechain(BaseBlockchain):
 if __name__ == "__main__":
     VECHAIN_NODE_URL = os.getenv("VECHAIN_NODE_URL")
     vechain = Vechain(VECHAIN_NODE_URL)
-    print(vechain.get_block_info("best"))
-    print(vechain.get_balance("0x1234567890abcdef1234567890abcdef12345678"))
-    print(vechain.get_transaction("0xe9c17f880cadbb104360ebad657e1f7fee68680b0bb1f1b01aea5e8870c1b121"))
+    # print(vechain.get_block_info("best"))
+    # print(vechain.get_balance("0x1234567890abcdef1234567890abcdef12345678"))
+    print(vechain.get_transaction("0x1c31133a632433cd4896c6303a562926eb84378356dee33484ebf6b72391daed"))
