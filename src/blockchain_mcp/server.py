@@ -1,12 +1,10 @@
-import datetime
+from decimal import Decimal
 from fastmcp import FastMCP
 from typing import Optional, Union
 import jsonschema
-from . import blockchain
-from .blockchain import BaseBlockchain
+from blockchain_mcp.chains_factory import GetBlockChain
 
 mcp = FastMCP("BlockchainMCP", dependencies=["mcp[cli]", "web3"])
-
 
 @mcp.tool()
 def get_blockchain_info(
@@ -27,8 +25,8 @@ def get_blockchain_info(
             },
             "block_number": {
                 "type": ["integer", "string"],
-                "pattern": "^latest$",
-                "description": "Block number（number or 'latest'）"
+                "pattern": "^[latest|best]$",
+                "description": "Block number（number or 'latest'or 'best'）"
             }
         },
         "required": ["blockchain_name"],
@@ -39,23 +37,17 @@ def get_blockchain_info(
     if block_number is None:
         block_number = "latest"
         
-     # 预处理区块链名称（网页2大小写处理方案）
-    formatted_name = blockchain_name.strip().lower().capitalize()
-    
-    # 验证区块链名称
-    valid_chains = ["Bitcoin", "Ethereum", "Vechain", "Solana"]
-    if formatted_name not in valid_chains:
-        raise ValueError(f"不支持的区块链: {formatted_name}，请选择 {valid_chains}")
-    
-    block_num = validate_block_number(block_number)
-        
-    print("Parameters: %s, %s"%(blockchain_name, block_num))
-    bc = blockchain.GetBlockChain(blockchain_name)
-    return bc.get_block_info(block_num)
-    
+    print("Parameters: %s, %s"%(blockchain_name, block_number))
+    try:
+        bc = GetBlockChain(blockchain_name)
+        return bc.get_block_info(block_number)
+    except ValueError as ve:
+        return f"ValueError: {str(ve)}"
+    except Exception as e:
+        return f"Error: {str(e)}"
 
 @mcp.tool()
-def get_balance(params: BalanceRequest) -> dict:
+def get_balance(blockchain_name: str,address: str) -> dict:
     """
     获取区块链地址余额（自动处理地址格式，保留5位小数）
     
@@ -76,47 +68,53 @@ def get_balance(params: BalanceRequest) -> dict:
         "required": ["blockchain_name", "address"]
     }
     """
+    
     try:
         # 获取原始余额
-        raw_balance = _get_raw_balance(params.blockchain_name, params.address)
-        
-        # 单位转换与精度处理
-        divisor = {
-            "bitcoin": Decimal(10**8),
-            "ethereum": Decimal(10**18),
-            "vechain": Decimal(10**18),
-            "solana": Decimal(10**9)
-        }[params.blockchain_name]
-
-        balance = Decimal(raw_balance) / divisor
-        return str(balance.quantize(Decimal('0.00000'), rounding=ROUND_HALF_UP))
-    
+        bc = GetBlockChain(blockchain_name)
+        trimed_address = address.strip()
+        balance = bc.get_balance(trimed_address)
+        return balance
+    except ValueError as ve:
+        return f"ValueError: {str(ve)}"
     except Exception as e:
         return f"Error: {str(e)}"
     
-
- 
-def validate_block_number(value):
-    validation_schema = {
-        "block_number": {
-            "anyOf": [
-                {"type": "integer", "minimum": 0},
-                {"const": "latest"}
-            ]
-        }
+@mcp.tool()
+def get_transaction(blockchain_name:str, tx_hash:str) -> dict:
+    """
+    获取区块链交易详情（自动处理地址格式）
+    
+    参数 Schema：
+    {
+        "type": "object",
+        "properties": {
+            "blockchain_name": {
+                "type": "string",
+                "enum": ["bitcoin", "ethereum", "vechain", "solana"],
+                "description": "区块链类型（不区分大小写）"
+            },
+            "tx_hash": {
+                "type": "string",
+                "description": "有效的区块链交易哈希"
+            }
+        },
+        "required": ["blockchain_name", "tx_hash"]
     }
+    """
     try:
-        jsonschema.validate(instance={"block_number": value}, schema=validation_schema)
-    except jsonschema.ValidationError as e:
-        raise ValueError(f"无效的区块编号: {e.message}")
-    # 统一转为小写处理（网页2大小写规范）
-    if isinstance(value, str):
-        value = value.strip().lower()
-        if value == "latest":
-            return "latest"
-        elif value.isdigit():
-            return int(value)
-    return value
+        # 获取原始交易详情
+        bc = GetBlockChain(blockchain_name)
+        trimed_tx_hash = tx_hash.strip()
+        transaction = bc.get_transaction(trimed_tx_hash)
+        return transaction
+    except ValueError as ve:
+        return f"ValueError: {str(ve)}"
+    except TypeError as te:
+        return f"TypeError: {str(te)}"
+    except Exception as e:
+        return f"Error: {str(e)}"
+ 
 
     
 # 生成 Claude 提示模板（网页7动态发现机制）
@@ -133,26 +131,7 @@ def generate_tool_prompt() -> str:
       用户输入："获取以太坊最新区块"
       → 生成参数：{{"blockchain_name": "Ethereum", "block_number": "latest"}}
     """
-
-def _get_raw_balance(blockchain_name, address):
-    if blockchain_name.lower() == 'ethereum':
-        
-    elif blockchain_name.lower() == 'vechain':
-        pass
-    elif blockchain_name.lower() == 'solana':
-        pass
-    elif blockchain_name.lower() == 'bitcoin':
-        pass
-
-def _get_blockchain(blockchain_name):
-    if blockchain_name.lower() == 'ethereum':
-        return blockchain.ether.Ether(ETHEREUM_NODE_URL)
-    elif blockchain_name.lower() == 'vechain':
-        pass
-    elif blockchain_name.lower() == 'solana':
-        pass
-    elif blockchain_name.lower() == 'bitcoin':
-        pass  
+ 
 def main():
     print("Start blockchain mcp server.")
     mcp.run()
