@@ -1,17 +1,16 @@
 # AI MCP Server of Blockchain
 
-#### Functions
+#### Functions 😀
 
 * get balance of address
-* get transaction content by transaction Id or transaction hash
+* get transaction content by transaction id or transaction hash
 * get block content by block number, block hash
-  More feature will come....
+  More feature will come....🚀
 
 #### Blockchain
 
-- Ethereum, VeChain.
-
-- *Bitcoin, Solana, Polygon will come soon.*
+- Ethereum ✅, VeChain✅.
+- *Bitcoin, Solana, Polygon will come soon.🚀*
 
 #### Setup
 
