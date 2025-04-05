@@ -20,7 +20,7 @@ class Ethereum(BaseBlockchain):
             dict: A dictionary of block information
         """
         try:
-            self.__validate_block_identifier(block_identifier)
+            self._validate_block_identifier(block_identifier)
             block_info = self.w3.eth.get_block(block_identifier).__dict__
             data =  f"""
                 baseFeePerGas: {block_info["baseFeePerGas"]},
@@ -38,7 +38,7 @@ class Ethereum(BaseBlockchain):
                 parentHash:{block_info["parentHash"].hex()},
                 stateRoot:{block_info["stateRoot"].hex()},
                 receiptsRoot:{block_info["receiptsRoot"].hex()},
-                transactions:{[item.hex() for item in block_info["transactions"]]}
+                transactions:{block_info["transactions"].count()}
             """
             return BlockchainResponse(success=True, data=data, error=None)
         except BlockNotFound as e:
@@ -136,6 +136,6 @@ if __name__ == "__main__":
     if not ETHEREUM_NODE_URL:
         raise ValueError("ETHEREUM_NODE_URL environment variable is not set")
     eth = Ethereum(ETHEREUM_NODE_URL)
-    # print(eth.get_block_info("latest"))
-    print(eth.get_balance("0xd3CdA913deB6f67967B99D67aCDFa1712C293601"))
+    print(eth.get_block_info("latest"))
+    #print(eth.get_balance("0xd3CdA913deB6f67967B99D67aCDFa1712C293601"))
     #print(eth.get_transaction("0x5f3b8c2e4d1a7c6f8e9b2f3a4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e"))
