@@ -38,7 +38,7 @@ class Ethereum(BaseBlockchain):
                 parentHash:{block_info["parentHash"].hex()},
                 stateRoot:{block_info["stateRoot"].hex()},
                 receiptsRoot:{block_info["receiptsRoot"].hex()},
-                transactions:{block_info["transactions"].count()}
+                transactions:{len(block_info["transactions"])}
             """
             return BlockchainResponse(success=True, data=data, error=None)
         except BlockNotFound as e:

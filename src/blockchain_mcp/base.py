@@ -56,22 +56,3 @@ class BaseBlockchain(ABC):
             raise ValueError("RPC URL必须以http/https开头")
         return v
     
-    
-    # def _validate_tx_hash(self, tx_hash: str) -> bool:
-    #     if self.chain_name == "ethereum" or self.chain_name == "vechain":
-    #         return bool(self.TX_HASH_PATTERN.fullmatch(tx_hash))
-    #     elif self.chain_name == "bitcoin":
-    #         # 比特币交易哈希无0x前缀
-    #         return len(tx_hash) == 64 and all(c in string.hexdigits for c in tx_hash)
-        
-    # def _validate_address(self, address: str) -> bool:
-    #     """地址格式校验"""
-    #     if self.chain_name == "ethereum" or self.chain_name == "vechain":
-    #         return bool(re.match(r'^0x[a-fA-F0-9]{40}$', address))
-    #     elif self.chain_name == "bitcoin":
-    #         # 比特币地址格式校验
-    #         return bool(re.match(r'^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$', address))
-    #     elif self.chain_name == "solana":
-    #         # Solana 地址格式校验
-    #         return bool(re.match(r'^[1-9A-HJ-NP-Za-km-z]{32,44}$', address))
-    #     return False
