@@ -5,6 +5,7 @@
 * get balance of address
 * get transaction content by transaction id or transaction hash
 * get block content by block number, block hash
+* get price
   More feature will come....🚀
 
 #### Blockchain
