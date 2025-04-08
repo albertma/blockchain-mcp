@@ -115,7 +115,33 @@ def get_transaction(blockchain_name:str, tx_hash:str) -> dict:
     except Exception as e:
         return f"Error: {str(e)}"
  
-
+@mcp.tool()
+def get_price(blockchain_name: str) -> dict:
+    """
+    获取区块链当前价格（主网代币）
+    
+    参数 Schema：
+    {
+        "type": "object",
+        "properties": {
+            "blockchain_name": {
+                "type": "string",
+                "enum": ["bitcoin", "ethereum", "vechain"],
+                "description": "区块链类型（不区分大小写）"
+            }
+        },
+        "required": ["blockchain_name"]
+    }
+    """
+    try:
+        # 获取原始价格
+        bc = GetBlockChain(blockchain_name)
+        price = bc.get_price()
+        return price
+    except ValueError as ve:
+        return f"ValueError: {str(ve)}"
+    except Exception as e:
+        return f"Error: {str(e)}"
     
 # 生成 Claude 提示模板（网页7动态发现机制）
 def generate_tool_prompt() -> str:
