@@ -182,4 +182,5 @@ if __name__ == "__main__":
     vechain = Vechain(VECHAIN_NODE_URL)
     # print(vechain.get_block_info("best"))
     # print(vechain.get_balance("0x1234567890abcdef1234567890abcdef12345678"))
-    print(vechain.get_transaction("0x1c31133a632433cd4896c6303a562926eb84378356dee33484ebf6b72391daed"))
+    #print(vechain.get_transaction("0x1c31133a632433cd4896c6303a562926eb84378356dee33484ebf6b72391daed"))
+    print(vechain.get_price())
