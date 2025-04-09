@@ -161,3 +161,6 @@ if __name__ == "__main__":
     # print(transaction_info)
     balance_info = solana.get_balance("3wf3Ttu4UhGC6ff1N7NVruXjdhsiP2CgPDMo4qhBApK9")
     print(balance_info)
+    
+    price_info = solana.get_price()
+    print(price_info)
