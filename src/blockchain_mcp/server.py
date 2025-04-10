@@ -1,7 +1,6 @@
-from decimal import Decimal
+# -*- coding: utf-8 -*-
 from fastmcp import FastMCP
 from typing import Optional, Union
-import jsonschema
 from blockchain_mcp.chains_factory import GetBlockChain
 
 mcp = FastMCP("BlockchainMCP", dependencies=["mcp[cli]", "web3"])
@@ -12,9 +11,9 @@ def get_blockchain_info(
     block_number: Optional[Union[int, str]] = "latest"
 ) -> dict:
     """
-    Get specified block information
+    获取区块链最新区块信息（自动处理地址格式）
     
-    Parameters Schema definition
+    参数Scheme：
     {
         "type": "object",
         "properties": {
@@ -29,7 +28,8 @@ def get_blockchain_info(
                 "description": "Block number（number or 'latest'or 'best'）"
             }
         },
-        "required": ["blockchain_name"],
+        "required": ["blockchain_name"， "block_number"],
+        "description": "Get the specified block information of the blockchain"
         "additionalProperties": false
     }
     """
@@ -65,6 +65,7 @@ def get_balance(blockchain_name: str,address: str) -> dict:
                 "description": "有效的区块链地址"
             }
         },
+        "description": "获取指定区块链地址的余额",
         "required": ["blockchain_name", "address"]
     }
     """
@@ -99,6 +100,7 @@ def get_transaction(blockchain_name:str, tx_hash:str) -> dict:
                 "description": "有效的区块链交易哈希"
             }
         },
+        "description": "获取指定区块链交易的详细信息",
         "required": ["blockchain_name", "tx_hash"]
     }
     """
@@ -130,6 +132,7 @@ def get_price(blockchain_name: str) -> dict:
                 "description": "区块链类型（不区分大小写）"
             }
         },
+        "description": "获取指定区块链当前价格",
         "required": ["blockchain_name"]
     }
     """
@@ -143,8 +146,9 @@ def get_price(blockchain_name: str) -> dict:
     except Exception as e:
         return f"Error: {str(e)}"
     
-# 生成 Claude 提示模板（网页7动态发现机制）
-def generate_tool_prompt() -> str:
+
+@mcp.prompt()
+def generate_claude_prompt() -> str:
     return f"""
     ## 可用工具：
     # get_blockchain_info
@@ -154,7 +158,7 @@ def generate_tool_prompt() -> str:
         "blockchain_name": "区块链名称（必填，可选：Ethereum/Bitcoin/Vechain/Solana）",
         "block_number": "区块编号（可选，默认'latest'）"
       }}
-    - 示例请求（网页4提示语工程）：
+    - 示例请求：
       用户输入："获取以太坊最新区块"
       → 生成参数：{{"blockchain_name": "Ethereum", "block_number": "latest"}}
     get_transaction
@@ -164,7 +168,7 @@ def generate_tool_prompt() -> str:
         "blockchain_name": "区块链名称（必填，可选：Ethereum/Bitcoin/Vechain/Solana）",
         "tx_hash": "交易哈希（必填）"
       }}
-    - 示例请求（网页4提示语工程）：
+    - 示例请求：
       用户输入："获取以太坊交易详情"
       → 生成参数：{{"blockchain_name": "Ethereum", "tx_hash": "0x1234567890abcdef"}}
     get_balance
@@ -174,9 +178,18 @@ def generate_tool_prompt() -> str:
         "blockchain_name": "区块链名称（必填，可选：Ethereum/Bitcoin/Vechain/Solana）",
         "address": "地址（必填）"
       }}
-    - 示例请求（网页4提示语工程）：
+    - 示例请求：
       用户输入："获取以太坊地址余额"
       → 生成参数：{{"blockchain_name": "Ethereum", "address": "0x1234567890abcdef"}}
+    get_price
+    - 功能：查询区块链当前价格（主网代币）
+    - 参数规范：
+      {{
+        "blockchain_name": "区块链名称（必填，可选：Ethereum/Bitcoin/Vechain/Solana）"
+      }}
+    - 示例请求：
+        用户输入："获取以太坊当前价格"
+        → 生成参数：{{"blockchain_name": "Ethereum"}}
     """
  
 def main():
